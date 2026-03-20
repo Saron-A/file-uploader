@@ -6,6 +6,7 @@ const localStrategy = require("passport-local").Strategy;
 const pool = require("./db/pool.js");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -13,7 +14,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // step 1: initialize passport
 
-app.use(session({ secret: "", resave: false, saveUninitialized: false }));
+app.use(
+  session({ secret: "something", resave: false, saveUninitialized: false }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -54,6 +57,9 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 // routes
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 // server start listening
 app.listen(3000, (err) => {

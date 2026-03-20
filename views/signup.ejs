@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Create an Account</h1>
+    <form action="/signup" method="POST">
+      <div class="label-input">
+        <label for="username">Create a username:</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+      <div class="label-input">
+        <label for="password">Create a password:</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <div class="label-input">
+        <label for="confirm_pass">Confirm your password:</label>
+        <input type="password" id="confirm_pass" name="confirm_pass" required />
+      </div>
+      <button type="submit">Sign Up</button>
+    </form>
+  </body>
+</html>
