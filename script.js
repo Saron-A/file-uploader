@@ -57,9 +57,23 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 // routes
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
+app.get("/signup", (req, res) => {
+  res.render("signup");
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+const accessPath = path.join(__dirname, "public");
+app.use(express.static(accessPath));
 
 // server start listening
 app.listen(3000, (err) => {
