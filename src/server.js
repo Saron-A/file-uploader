@@ -24,10 +24,12 @@ app.use(passport.session());
 passport.use(
   new localStrategy(async (username, password, done) => {
     try {
-      const rows = await pool.query("SELECT * FROM User WHERE username = $1", [
-        username,
-      ]);
+      const { rows } = await pool.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username],
+      );
       const user = rows[0];
+
       if (!user) {
         return done(null, false, { message: "User not found" });
       }
@@ -49,7 +51,9 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const rows = await pool.query("SELECT * FROM User WHERE id = $1", [id]);
+    const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
+      id,
+    ]);
     const user = rows[0];
     return done(null, user);
   } catch (err) {
@@ -65,8 +69,60 @@ app.get("/signup", (req, res) => {
   res.render("signup");
 });
 
+app.post("/signup", async (req, res) => {
+  const { username, password, confirm_pass } = req.body;
+  // check if user already exists
+  //confirm password correctness
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM users WHERE username = $1",
+      [username],
+    );
+    if (rows.length > 0) {
+      return res.send("Username already exists");
+    } else if (password !== confirm_pass) {
+      return res.send("Passwords do not match");
+    } else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await pool.query(
+        "INSERT INTO users (username, password) VALUES ($1, $2)",
+        [username, hashedPassword],
+      );
+      return res.status(200).send("User registered successfully");
+    }
+  } catch (err) {
+    console.error("Error during signup:", err);
+  }
+});
+
 app.get("/login", (req, res) => {
   res.render("login");
+});
+
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) next(err);
+    if (!user) {
+      res.status(400).send(info.message);
+    }
+
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.json({
+        message: "login successful",
+        user: { id: user.id, username: user.username },
+      });
+    });
+  })(req, res, next);
+});
+
+// current user
+app.get("/current_user", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.json({ user: { id: req.user.id, username: req.user.username } });
+  } else {
+    res.status(401).json({ error: "Not logged in" });
+  }
 });
 
 app.set("views", path.join(__dirname, "../src/views"));
