@@ -46,7 +46,7 @@ passport.use(
 );
 //Step 3: serialize and deserialize user
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  return done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
@@ -62,7 +62,9 @@ passport.deserializeUser(async (id, done) => {
 });
 // routes
 app.get("/", (req, res) => {
-  res.render("index");
+  if (req.isAuthenticated()) {
+    res.render("index", { user: req.user });
+  } else res.render("index", { user: null });
 });
 
 app.get("/signup", (req, res) => {
@@ -108,10 +110,7 @@ app.post("/login", (req, res, next) => {
 
     req.logIn(user, (err) => {
       if (err) return next(err);
-      return res.json({
-        message: "login successful",
-        user: { id: user.id, username: user.username },
-      });
+      return res.redirect("/");
     });
   })(req, res, next);
 });
@@ -136,6 +135,6 @@ app.listen(3000, (err) => {
   if (err) {
     console.error("Error starting server:", err);
   } else {
-    console.log("Server is running on port 3000");
+    console.log(`Server is running on http://localhost:3000`);
   }
 });
