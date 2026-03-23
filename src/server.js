@@ -138,21 +138,23 @@ app.get("/upload", (req, res) => {
 });
 
 app.post("/upload", upload.single("file"), async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      const file = req.file;
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("Unauthorized");
+  }
 
-      await pool.query(
-        "INSERT INTO files (name, path,size, createdat, user_id) VALUES ($1, $2, $3, $4, $5)",
-        [file.filename, file.path, file.size, new Date(), req.user.id],
-      );
+  try {
+    const file = req.file;
 
-      console.log(file);
-      res.send("File uploaded successfully");
-    } catch (err) {
-      console.error("Error during file upload:", err);
-      res.status(500).send("Error uploading file");
-    }
+    await pool.query(
+      "INSERT INTO files (name, path,size, user_id) VALUES ($1, $2, $3, $4)",
+      [file.originalname, file.path, file.size, req.user.id],
+    );
+
+    console.log(file);
+    res.send("File uploaded successfully");
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    res.status(500).send("Error uploading file");
   }
 });
 
