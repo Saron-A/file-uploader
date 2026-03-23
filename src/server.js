@@ -124,6 +124,18 @@ app.get("/current_user", (req, res) => {
   }
 });
 
+app.get("/profile", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.render("profile", { user: req.user });
+  }
+});
+
+app.get("/upload", (req, res) => {
+  if (req.isAuthenticated()) {
+    return res.render("upload", { user: req.user });
+  }
+});
+
 app.set("views", path.join(__dirname, "../src/views"));
 app.set("view engine", "ejs");
 
