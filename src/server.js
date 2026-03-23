@@ -7,6 +7,7 @@ const pool = require("./db/pool.js");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const path = require("path");
+const upload = require("./multerConfig.js");
 
 const app = express();
 app.use(cors());
@@ -133,6 +134,25 @@ app.get("/profile", (req, res) => {
 app.get("/upload", (req, res) => {
   if (req.isAuthenticated()) {
     return res.render("upload", { user: req.user });
+  }
+});
+
+app.post("/upload", upload.single("file"), async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const file = req.file;
+
+      await pool.query(
+        "INSERT INTO files (name, path,size, createdat, user_id) VALUES ($1, $2, $3, $4, $5)",
+        [file.filename, file.path, file.size, new Date(), req.user.id],
+      );
+
+      console.log(file);
+      res.send("File uploaded successfully");
+    } catch (err) {
+      console.error("Error during file upload:", err);
+      res.status(500).send("Error uploading file");
+    }
   }
 });
 
