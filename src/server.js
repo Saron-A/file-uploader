@@ -131,9 +131,46 @@ app.get("/profile", (req, res) => {
   }
 });
 
-app.get("/upload", (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.render("upload", { user: req.user });
+app.get("/createFolder", (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("Unauthorized");
+  }
+  return res.render("createFolder", { user: req.user });
+});
+
+app.post("/createFolder", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    const { name } = req.body;
+    await pool.query("INSERT INTO folders (name, user_id) VALUES ($1, $2)", [
+      name,
+      req.user.id,
+    ]);
+    console.log("Folder created successfully");
+    return res.redirect("/upload");
+  } catch (err) {
+    console.error("Error creating folder:", err);
+    return res.status(500).send("Error creating folder");
+  }
+});
+
+app.get("/upload", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM folders WHERE user_id = $1",
+      [req.user.id],
+    );
+
+    return res.render("upload", { user: req.user, folders: rows });
+  } catch (err) {
+    console.error("Error rendering upload page:", err);
   }
 });
 
@@ -144,10 +181,14 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
   try {
     const file = req.file;
+    const folderId = parseInt(req.body.folderId);
+    if (!folderId) {
+      return res.status(400).send("Folder is required");
+    }
 
     await pool.query(
-      "INSERT INTO files (name, path,size, user_id) VALUES ($1, $2, $3, $4)",
-      [file.originalname, file.path, file.size, req.user.id],
+      "INSERT INTO files (name, path,size, folder_id, user_id) VALUES ($1, $2, $3, $4, $5)",
+      [file.originalname, file.path, file.size, folderId, req.user.id],
     );
 
     console.log(file);
