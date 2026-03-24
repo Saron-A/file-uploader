@@ -8,15 +8,21 @@
 <body>
     <h1>Folder Contents</h1>
     <ul>
-        <% files.forEach((file) => {%>
-            <a href="/<%= file.path %>" target="_blank">
+        <% if (files.length > 0) { %>
+ <% files.forEach((file) => {%>
+            <a href="/files/<%= file.id %>" target="_blank">
                 <li>
                     <img src="" alt="file icon">
                     <p><%= file.name %></p>
                 </li>
             </a>
 
-        })
+       <% }) } else { %>
+            <p>No files in this folder.</p>
+       <% } %>
+       
+    
+       
     </ul>
 </body>
 </html>

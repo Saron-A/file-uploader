@@ -22,6 +22,10 @@
 
     <h3>Your Files and Folders</h3>
     <h4>Folders</h4>
+    
+    <%  if (folders.length === 0) { %>
+<p>No folders found. </p>
+     <% }else { %>
     <ul>
         <%folders.forEach((folder) => {%>
          <a href="/folders/<%=folder.id%>">
@@ -32,6 +36,22 @@
          </a>   
       <%  }) %>
     </ul>
+   <%   } %>
+  
+    <!-- <% if (files.length > 0) { %>
+<h4>Files not in any folder</h4>
+    <ul>
+      <%files.forEach((file) => {%>
+        <a href="">
+          <li>
+            <img src="" alt="file icon">
+            <p><%= file.name %></p>
+          </li>
+        </a>
+     <% }) %>
+    </ul>
+    <%} %> -->
+    
     
   </body>
 </html>

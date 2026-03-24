@@ -7,6 +7,7 @@ const pool = require("./db/pool.js");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const path = require("path");
+const fs = require("node:fs");
 const upload = require("./multerConfig.js");
 
 const app = express();
@@ -177,11 +178,11 @@ app.get("/folders/:folderId", async (req, res) => {
   }
   try {
     const { folderId } = req.params;
-    const { rows } = await pool.query(
+    const files = await pool.query(
       "SELECT * FROM files WHERE folder_id = $1 AND user_id = $2",
       [folderId, req.user.id],
     );
-    return res.render("folderContents", { user: req.user, files: rows });
+    return res.render("folderContents", { user: req.user, files: files.rows });
   } catch (err) {
     console.error("Error fetching folder contents:", err);
   }
@@ -193,11 +194,19 @@ app.get("/profile", (req, res) => {
   }
 });
 
-app.get("/createFolder", (req, res) => {
+app.get("/createFolder", async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).send("Unauthorized");
   }
-  return res.render("createFolder", { user: req.user });
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM files WHERE folder_id IS NULL AND user_id = $1",
+      [req.user.id],
+    );
+    return res.render("createFolder", { user: req.user, files: rows });
+  } catch (err) {
+    console.error("Error rendering create folder page:", err);
+  }
 });
 
 app.post("/createFolder", async (req, res) => {
@@ -258,6 +267,33 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
     res.status(500).send("Error uploading file");
+  }
+});
+
+app.get("/files/:fileId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    const { fileId } = req.params;
+    // through the id find the file path in the database
+    // then send the file to the client - display the content or make it downloadable
+    const { rows } = await pool.query(
+      "SELECT * FROM files Where id = $1 AND user_id = $2",
+      [fileId, req.user.id],
+    ); // returns a single file object in an array
+
+    const file = rows[0];
+    const filePath = file.path;
+
+    // display the content of the file in the browser if it's a text file, otherwise make it downloadable
+
+    const fileData = fs.readFileSync(filePath, "utf-8");
+    console.log(fileData);
+    return res.render("fileContents", { content: fileData });
+  } catch (err) {
+    console.error("Error fetching file:", err);
   }
 });
 
