@@ -1,1 +1,10 @@
-<pre><%= content %></pre
+<nav>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>
+    <li><a href="/folders/<%= file.folder_id %>">Back to folder</a></li>
+    <li><a href="/profile">Profile</a></li>
+  </ul>
+</nav>
+<h2><%= file.name %></h2>
+<pre><%= content %></pre>

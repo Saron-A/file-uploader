@@ -304,7 +304,7 @@ app.get("/files/:fileId", async (req, res) => {
     const ext = path.extname(file.name).toLowerCase();
     if (ext === ".txt") {
       const fileData = fs.readFileSync(filePath, "utf-8");
-      res.setHeader("Content-Type", "text/plain");
+
       return res.render("fileContents", {
         content: fileData,
         folderId: file.folder_id,
