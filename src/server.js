@@ -288,10 +288,14 @@ app.get("/files/:fileId", async (req, res) => {
     const filePath = file.path;
 
     // display the content of the file in the browser if it's a text file, otherwise make it downloadable
-
-    const fileData = fs.readFileSync(filePath, "utf-8");
-    console.log(fileData);
-    return res.render("fileContents", { content: fileData });
+    const ext = path.extname(file.name).toLowerCase();
+    if (ext === ".txt") {
+      const fileData = fs.readFileSync(filePath, "utf-8");
+      res.setHeader("Content-Type", "text/plain");
+      return res.render("fileContents", { content: fileData });
+    } else {
+      return res.download(filePath, file.name);
+    }
   } catch (err) {
     console.error("Error fetching file:", err);
   }

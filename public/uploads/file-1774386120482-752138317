@@ -1,0 +1,33 @@
+addBtn.addEventListener("click", () => {
+  if (input.value !== "") {
+    let div = document.createElement("div");
+    div.classList.add("tasks");
+
+    let task = taskCreation(div);
+    editTask(div, task);
+    delTask(div);
+
+    lists.appendChild(div);
+    // we don't have a local storage yet
+    if (!todo) {
+      todo = [];
+    }
+    let items = {
+      todo: input.value,
+      status: false,
+    };
+
+    todo.push(items);
+    console.log(items);
+    localStorage.setItem("todo", JSON.stringify(todo));
+
+    input.value = "";
+  } else {
+    let error = document.createElement("p");
+    error.textContent = "Please enter a task!";
+    lists.appendChild(error);
+    setTimeout(() => {
+      error.remove();
+    }, 3000);
+  }
+});
