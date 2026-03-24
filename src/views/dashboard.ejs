@@ -24,11 +24,14 @@
     <h4>Folders</h4>
     <ul>
         <%folders.forEach((folder) => {%>
-            <li class="folder-item" >
+         <a href="/folders/<%=folder.id%>">
+            <li class="folder-item">
                 <img src="" alt="folder icon">
                 <p><%= folder.name %></p>
             </li>
+         </a>   
       <%  }) %>
     </ul>
+    
   </body>
 </html>

@@ -171,6 +171,22 @@ app.get("/dashboard", async (req, res) => {
   }
 });
 
+app.get("/folders/:folderId", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send("Unauthorized");
+  }
+  try {
+    const { folderId } = req.params;
+    const { rows } = await pool.query(
+      "SELECT * FROM files WHERE folder_id = $1 AND user_id = $2",
+      [folderId, req.user.id],
+    );
+    return res.render("folderContents", { user: req.user, files: rows });
+  } catch (err) {
+    console.error("Error fetching folder contents:", err);
+  }
+});
+
 app.get("/profile", (req, res) => {
   if (req.isAuthenticated()) {
     res.render("profile", { user: req.user });
