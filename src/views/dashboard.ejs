@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <nav>
+      <li><a href="/">Home</a></li>
+      <li><a href="/login">Login</a></li>
+    </nav>
+
+    <h1>Welcome to your dashboard, <%= user.username %>!</h1>
+    <p>Here you can manage your files and folders.</p>
+    <ul class="dashboard_menu">
+      <li><a href="/createFolder">Create a new folder</a></li>
+      <li><a href="/upload">Upload a new file</a></li>
+      <li><a href="/profile">View your profile</a></li>
+      <li><a href="/logout">Logout</a></li>
+    </ul>
+
+    <h3>Your Files and Folders</h3>
+    <h4>Folders</h4>
+    <ul>
+        <%folders.forEach((folder) => {%>
+            <li class="folder-item" >
+                <img src="" alt="folder icon">
+                <p><%= folder.name %></p>
+            </li>
+      <%  }) %>
+    </ul>
+  </body>
+</html>

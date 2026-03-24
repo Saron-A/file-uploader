@@ -62,9 +62,28 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 // routes
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   if (req.isAuthenticated()) {
-    res.render("index", { user: req.user });
+    try {
+      const files = await pool.query("SELECT * FROM files WHERE user_id = $1", [
+        req.user.id,
+      ]);
+      console.log(files.rows); // returns array of files -- files.rows
+
+      const folders = await pool.query(
+        "SELECT * FROM folders WHERE user_id = $1",
+        [req.user.id],
+      );
+      console.log(folders.rows); // returns arrays of folders -- folders.rows
+
+      res.render("index", {
+        user: req.user,
+        files: files.rows,
+        folders: folders.rows,
+      });
+    } catch (err) {
+      console.error("Error rendering index page:", err);
+    }
   } else res.render("index", { user: null });
 });
 
@@ -122,6 +141,33 @@ app.get("/current_user", (req, res) => {
     return res.json({ user: { id: req.user.id, username: req.user.username } });
   } else {
     res.status(401).json({ error: "Not logged in" });
+  }
+});
+
+app.get("/dashboard", async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const files = await pool.query("SELECT * FROM files WHERE user_id = $1", [
+        req.user.id,
+      ]);
+      console.log(files.rows); // returns array of files -- files.rows
+
+      const folders = await pool.query(
+        "SELECT * FROM folders WHERE user_id = $1",
+        [req.user.id],
+      );
+      console.log(folders.rows); // returns arrays of folders -- folders.rows
+
+      res.render("dashboard", {
+        user: req.user,
+        files: files.rows,
+        folders: folders.rows,
+      });
+    } catch (err) {
+      console.error("Error rendering index page:", err);
+    }
+  } else {
+    res.status(401).send("Unauthorized");
   }
 });
 
