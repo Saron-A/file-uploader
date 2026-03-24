@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Folder contents</title>
 </head>
 <body>
-    <h1>Folder Contents</h1>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/profile">Profile</a></li>
+        </ul>
+    </nav>
+    <h1><%=folder.name%></h1>
     <ul>
         <% if (files.length > 0) { %>
  <% files.forEach((file) => {%>

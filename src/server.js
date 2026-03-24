@@ -182,7 +182,16 @@ app.get("/folders/:folderId", async (req, res) => {
       "SELECT * FROM files WHERE folder_id = $1 AND user_id = $2",
       [folderId, req.user.id],
     );
-    return res.render("folderContents", { user: req.user, files: files.rows });
+
+    const folder = await pool.query("SELECT name FROM folders WHERE id=$1", [
+      folderId,
+    ]);
+    const folderName = folder.rows[0].name;
+    return res.render("folderContents", {
+      user: req.user,
+      files: files.rows,
+      folder: { name: folderName },
+    });
   } catch (err) {
     console.error("Error fetching folder contents:", err);
   }
@@ -285,6 +294,10 @@ app.get("/files/:fileId", async (req, res) => {
     ); // returns a single file object in an array
 
     const file = rows[0];
+
+    if (!file) {
+      return res.status(404).send("File not found");
+    }
     const filePath = file.path;
 
     // display the content of the file in the browser if it's a text file, otherwise make it downloadable
@@ -292,12 +305,17 @@ app.get("/files/:fileId", async (req, res) => {
     if (ext === ".txt") {
       const fileData = fs.readFileSync(filePath, "utf-8");
       res.setHeader("Content-Type", "text/plain");
-      return res.render("fileContents", { content: fileData });
+      return res.render("fileContents", {
+        content: fileData,
+        folderId: file.folder_id,
+        file: file,
+      });
     } else {
       return res.download(filePath, file.name);
     }
   } catch (err) {
     console.error("Error fetching file:", err);
+    return res.status(500).send("Server error");
   }
 });
 
