@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/script.css">
     <title>Homepage</title>
 </head>
 <body>
-    <div class="container">
+    <div class="home-container">
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
@@ -23,24 +24,38 @@
               
             </ul>
         </nav>
-        <h1>Welcome to File Uploader<% if(user) {%>, <%=user.username%><%}%>
+        <header>
+              <h1>Welcome to File Uploader<% if(user) {%>, <%=user.username%><%}%>
         </h1>
+        </header>
+      
         <div class="subcontainer">
             <div class="intro">
-                <p>Welcome to the File Uploader! Upload your files with ease...
+                <p>Welcome to the File Uploader - A streamlined file storage solution built for efficiency and clarity. This platform allows you to upload, organize, and manage your files through a structured folder system, making it easy to keep track of your data and maintain a clean, organized workspace. Whether you're handling personal documents, project files, or important records, everything can be neatly arranged and accessed in just a few clicks. With secure access, intuitive navigation, and a user-friendly interface, your files are always within reach when you need them. Designed to simplify your workflow and reduce clutter, this solution helps you stay focused, productive, and in control of your digital storage at all times.
                 </p>
             </div>
             <div class="image">
-                <img src="../images/2765820.jpg" alt="upload image" width="400px" height="300px">
+                <img src="../images/2765820.jpg" alt="upload image" width="350px" height="300px">
             </div>
         </div>
+
+        <% if (!user) {%>
+            <p id="login_signup"> To create folders and store files, please <a href="/login">log in to your account</a> or <a href="/signup">create an account</a>.</p>
+            
+          <%  }%>
+            
+        
 
         <% if (user) { %>
             <button><a href="/createFolder">Create Folder</a></button>
             <br><br>
                 <button><a href="/upload">Upload File</a></button>
           
-        <%} %>
+        <% } %>
+
+        <footer>
+                <p>&copy; 2024 File Uploader. All rights reserved.</p>
+        </footer>
     </div>
 </body>
 </html>
