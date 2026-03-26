@@ -3,25 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/dashboard.css">
     <title>Dashboard</title>
   </head>
   <body>
     <nav>
+      <ul>
       <li><a href="/">Home</a></li>
-      <li><a href="/login">Login</a></li>
+       <li><a href="/logout">Logout</a></li>
+      </ul>
+
     </nav>
 
-    <h1>Welcome to your dashboard, <%= user.username %>!</h1>
+    <header>
+        <h1>Welcome to your dashboard, <%= user.username %>!</h1>
     <p>Here you can manage your files and folders.</p>
+    </header>
+  
     <ul class="dashboard_menu">
       <li><a href="/createFolder">Create a new folder</a></li>
       <li><a href="/upload">Upload a new file</a></li>
       <li><a href="/profile">View your profile</a></li>
-      <li><a href="/logout">Logout</a></li>
-    </ul>
 
-    <h3>Your Files and Folders</h3>
-    <h4>Folders</h4>
+    </ul>
+    <div class="folders">
+    <h2>Folders</h2>
     
     <%  if (folders.length === 0) { %>
 <p>No folders found. </p>
@@ -30,13 +36,16 @@
         <%folders.forEach((folder) => {%>
          <a href="/folders/<%=folder.id%>">
             <li class="folder-item">
-                <img src="" alt="folder icon">
+                <img src="/images/5c23f889-065f-43dd-a012-0e87b13e47b8.jpg" alt="folder icon" width="150px" height="120px"/>
                 <p><%= folder.name %></p>
             </li>
          </a>   
       <%  }) %>
     </ul>
    <%   } %>
+    </div>
+
+   
   
     <!-- <% if (files.length > 0) { %>
 <h4>Files not in any folder</h4>

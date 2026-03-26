@@ -17,7 +17,7 @@
 }
 nav {
   box-shadow: 0 0.2rem 0.1rem rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  padding: 1.5rem 2rem;
   width: 100vw;
   background-color: black;
 }
@@ -25,8 +25,8 @@ nav {
 nav ul {
   list-style: none;
   display: flex;
-  justify-content: center;
-  gap: 3rem;
+  justify-content: space-around;
+  /* gap: 1rem; */
 }
 
 nav ul li a {
